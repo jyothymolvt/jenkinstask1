@@ -44,11 +44,11 @@ EOF
             sh '''
             aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 344548866539.dkr.ecr.eu-north-1.amazonaws.com
 
-docker build -t myproject:$TAG .
+docker build -t myproject .
 
-docker tag myproject:$TAG 344548866539.dkr.ecr.eu-north-1.amazonaws.com/myproject:$TAG
+docker tag myproject:latest 344548866539.dkr.ecr.eu-north-1.amazonaws.com/myproject:latest
 
-docker push 344548866539.dkr.ecr.eu-north-1.amazonaws.com/myproject:$TAG
+docker push 344548866539.dkr.ecr.eu-north-1.amazonaws.com/myproject:latest
 '''
 
             }
