@@ -41,7 +41,7 @@ EOF
            }
       stage('stage-3')  {
      steps {
-            sh '''
+            sh '''#!/bin/bash -xe
             aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 344548866539.dkr.ecr.ap-south-1.amazonaws.com
             docker build -t myproject .
             docker tag myproject:latest 344548866539.dkr.ecr.ap-south-1.amazonaws.com/myproject:latest
