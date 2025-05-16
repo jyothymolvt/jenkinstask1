@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCOUNT_ID = '344548866539'
+        IMAGE_NAME = 'myproject'
+        REPO_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
+    }
+
     stages {
         stage('stage1-Create index.php') {
             steps {
@@ -41,13 +48,16 @@ EOF
            }
       stage('stage-3')  {
      steps {
-            sh '''#!/bin/bash -xe
-            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 344548866539.dkr.ecr.ap-south-1.amazonaws.com
-            docker build -t myproject .
-            docker tag myproject:latest 344548866539.dkr.ecr.ap-south-1.amazonaws.com/myproject:latest
-            docker push 344548866539.dkr.ecr.ap-south-1.amazonaws.com/myproject:latest
-            '''
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh '''
+                    aws ecr get-login-password --region $AWS_REGION | \
+                    docker login --username AWS --password-stdin $REPO_URL
 
+                    docker build -t $IMAGE_NAME .
+                    docker tag $IMAGE_NAME:latest $REPO_URL:latest
+                    docker push $REPO_URL:latest
+                    '''
+              }
             }
         }   
     }
